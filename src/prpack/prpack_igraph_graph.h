@@ -1,7 +1,7 @@
-#ifndef PRPACK_IGRAPH_GRAPH
-#define PRPACK_IGRAPH_GRAPH
-
-#ifdef PRPACK_IGRAPH_SUPPORT
+//#ifndef PRPACK_IGRAPH_GRAPH
+//#define PRPACK_IGRAPH_GRAPH
+//
+//#ifdef PRPACK_IGRAPH_SUPPORT
 
 #include "igraph_interface.h"
 #include "prpack_base_graph.h"
@@ -19,8 +19,8 @@ namespace prpack {
 
 };
 
-// PRPACK_IGRAPH_SUPPORT 
-#endif 
-
-// PRPACK_IGRAPH_GRAPH
-#endif
+//// PRPACK_IGRAPH_SUPPORT 
+//#endif 
+//
+//// PRPACK_IGRAPH_GRAPH
+//#endif

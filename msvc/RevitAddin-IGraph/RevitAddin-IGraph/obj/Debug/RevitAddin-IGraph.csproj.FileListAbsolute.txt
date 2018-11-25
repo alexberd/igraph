@@ -1,0 +1,6 @@
+C:\Users\WindowsOnUbuntu\source\repos\RevitAddin-IGraph\RevitAddin-IGraph\bin\Debug\RevitAddin-IGraph.dll
+C:\Users\WindowsOnUbuntu\source\repos\RevitAddin-IGraph\RevitAddin-IGraph\bin\Debug\RevitAddin-IGraph.pdb
+C:\Users\WindowsOnUbuntu\source\repos\RevitAddin-IGraph\RevitAddin-IGraph\obj\Debug\RevitAddin-IGraph.csprojResolveAssemblyReference.cache
+C:\Users\WindowsOnUbuntu\source\repos\RevitAddin-IGraph\RevitAddin-IGraph\obj\Debug\RevitAddin-IGraph.csproj.CoreCompileInputs.cache
+C:\Users\WindowsOnUbuntu\source\repos\RevitAddin-IGraph\RevitAddin-IGraph\obj\Debug\RevitAddin-IGraph.dll
+C:\Users\WindowsOnUbuntu\source\repos\RevitAddin-IGraph\RevitAddin-IGraph\obj\Debug\RevitAddin-IGraph.pdb

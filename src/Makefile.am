@@ -67,7 +67,7 @@ if INTERNAL_F2C
   libf2c_la_CFLAGS = -DSkip_f2c_Undefs -I. -I$(top_srcdir)/include -I$(top_builddir)/include $(WARNING_CFLAGS)
   f2c/arith.h: f2c/arithchk.c
 	$(CC) $(CFLAGS) -DNO_FPINIT f2c/arithchk.c -lm -o f2c/arith || \
-	$(CC) -DNO_LONG_LONG $(CFLAGS) -DNO_FPINIT $(top_srcdir)/src/f2c/arithchk.c \
+	$(CC) -DNO_LONG_LONG $(CFLAGS) -DNO_FPINIT f2c/arithchk.c \
 		$(WARNING_CFLAGS) -lm -o f2c/arith
 	f2c/arith > f2c/arith.h
   f2c/sysdep1.h: f2c/sysdep1.h0
@@ -140,111 +140,6 @@ CS = cs/cs_add.c       cs/cs_happly.c    cs/cs_pvec.c         \
 	cs/cs_gaxpy.c     cs/cs_print.c     cs/cs_utsolve.c   \
 	cs/cs.h	    cs/UFconfig.h
 
-CHOLMOD = 	CHOLMOD/Check/cholmod_check.c	\
-		CHOLMOD/Check/cholmod_read.c	\
-		CHOLMOD/Check/cholmod_write.c	\
-		CHOLMOD/Cholesky/cholmod_amd.c	\
-		CHOLMOD/Cholesky/cholmod_analyze.c	\
-		CHOLMOD/Cholesky/cholmod_colamd.c	\
-		CHOLMOD/Cholesky/cholmod_etree.c	\
-		CHOLMOD/Cholesky/cholmod_factorize.c	\
-		CHOLMOD/Cholesky/cholmod_postorder.c	\
-		CHOLMOD/Cholesky/cholmod_rcond.c	\
-		CHOLMOD/Cholesky/cholmod_resymbol.c	\
-		CHOLMOD/Cholesky/cholmod_rowcolcounts.c	\
-		CHOLMOD/Cholesky/cholmod_rowfac.c	\
-		CHOLMOD/Cholesky/cholmod_solve.c	\
-		CHOLMOD/Cholesky/cholmod_spsolve.c	\
-		CHOLMOD/Core/cholmod_aat.c	\
-		CHOLMOD/Core/cholmod_add.c	\
-		CHOLMOD/Core/cholmod_band.c	\
-		CHOLMOD/Core/cholmod_change_factor.c	\
-		CHOLMOD/Core/cholmod_common.c	\
-		CHOLMOD/Core/cholmod_complex.c	\
-		CHOLMOD/Core/cholmod_copy.c	\
-		CHOLMOD/Core/cholmod_dense.c	\
-		CHOLMOD/Core/cholmod_error.c	\
-		CHOLMOD/Core/cholmod_factor.c	\
-		CHOLMOD/Core/cholmod_memory.c	\
-		CHOLMOD/Core/cholmod_sparse.c	\
-		CHOLMOD/Core/cholmod_transpose.c	\
-		CHOLMOD/Core/cholmod_triplet.c	\
-		CHOLMOD/Core/cholmod_version.c	\
-		CHOLMOD/MatrixOps/cholmod_drop.c	\
-		CHOLMOD/MatrixOps/cholmod_horzcat.c	\
-		CHOLMOD/MatrixOps/cholmod_norm.c	\
-		CHOLMOD/MatrixOps/cholmod_scale.c	\
-		CHOLMOD/MatrixOps/cholmod_sdmult.c	\
-		CHOLMOD/MatrixOps/cholmod_ssmult.c	\
-		CHOLMOD/MatrixOps/cholmod_submatrix.c	\
-		CHOLMOD/MatrixOps/cholmod_symmetry.c	\
-		CHOLMOD/MatrixOps/cholmod_vertcat.c	\
-		CHOLMOD/Modify/cholmod_rowadd.c	\
-		CHOLMOD/Modify/cholmod_rowdel.c	\
-		CHOLMOD/Modify/cholmod_updown.c	\
-		CHOLMOD/Partition/cholmod_camd.c	\
-		CHOLMOD/Partition/cholmod_ccolamd.c	\
-		CHOLMOD/Partition/cholmod_csymamd.c	\
-		CHOLMOD/Partition/cholmod_metis.c	\
-		CHOLMOD/Partition/cholmod_nesdis.c	\
-		CHOLMOD/Supernodal/cholmod_super_numeric.c	\
-		CHOLMOD/Supernodal/cholmod_super_solve.c	\
-		CHOLMOD/Supernodal/cholmod_super_symbolic.c	\
-		CHOLMOD/Include/cholmod.h	\
-		CHOLMOD/Include/cholmod_blas.h	\
-		CHOLMOD/Include/cholmod_camd.h	\
-		CHOLMOD/Include/cholmod_check.h	\
-		CHOLMOD/Include/cholmod_cholesky.h	\
-		CHOLMOD/Include/cholmod_complexity.h	\
-		CHOLMOD/Include/cholmod_config.h	\
-		CHOLMOD/Include/cholmod_core.h	\
-		CHOLMOD/Include/cholmod_internal.h	\
-		CHOLMOD/Include/cholmod_io64.h	\
-		CHOLMOD/Include/cholmod_matrixops.h	\
-		CHOLMOD/Include/cholmod_modify.h	\
-		CHOLMOD/Include/cholmod_partition.h	\
-		CHOLMOD/Include/cholmod_supernodal.h	\
-		CHOLMOD/Include/cholmod_template.h
-
-EXTRA_DIST += 	CHOLMOD/Cholesky/t_cholmod_lsolve.c		\
-		CHOLMOD/Cholesky/t_cholmod_ltsolve.c		\
-		CHOLMOD/Cholesky/t_cholmod_rowfac.c		\
-		CHOLMOD/Cholesky/t_cholmod_solve.c		\
-		CHOLMOD/Core/t_cholmod_change_factor.c		\
-		CHOLMOD/Core/t_cholmod_dense.c			\
-		CHOLMOD/Core/t_cholmod_transpose.c		\
-		CHOLMOD/Core/t_cholmod_triplet.c		\
-		CHOLMOD/MatrixOps/t_cholmod_sdmult.c		\
-		CHOLMOD/Modify/t_cholmod_updown.c		\
-		CHOLMOD/Modify/t_cholmod_updown_numkr.c		\
-		CHOLMOD/Supernodal/t_cholmod_gpu.c		\
-		CHOLMOD/Supernodal/t_cholmod_super_numeric.c	\
-		CHOLMOD/Supernodal/t_cholmod_super_solve.c
-
-
-AMD = 		AMD/Source/amd_1.c	\
-		AMD/Source/amd_2.c	\
-		AMD/Source/amd_aat.c	\
-		AMD/Source/amd_control.c	\
-		AMD/Source/amd_defaults.c	\
-		AMD/Source/amd_dump.c	\
-		AMD/Source/amd_global.c	\
-		AMD/Source/amd_info.c	\
-		AMD/Source/amd_order.c	\
-		AMD/Source/amd_post_tree.c	\
-		AMD/Source/amd_postorder.c	\
-		AMD/Source/amd_preprocess.c	\
-		AMD/Source/amd_valid.c	\
-		AMD/Include/amd.h	\
-		AMD/Include/amd_internal.h
-
-COLAMD =        COLAMD/Source/colamd.c	\
-		COLAMD/Source/colamd_global.c	\
-		COLAMD/Include/colamd.h
-
-SPCONFIG =      SuiteSparse_config/SuiteSparse_config.c \
-                SuiteSparse_config/SuiteSparse_config.h
-
 HEADERS_PRIVATE = atlas-edges.h \
 		bliss_bignum.hh		bliss_defs.hh \
 		bliss_eqrefhash.hh	bliss_graph.hh \
@@ -280,9 +175,7 @@ HEADERS_PRIVATE = atlas-edges.h \
 		foreign-ncol-header.h foreign-lgl-header.h \
 		foreign-pajek-header.h igraph_interrupt_internal.h \
 		scg_headers.h igraph_hacks_internal.h triangles_template.h \
-		triangles_template1.h maximal_cliques_template.h prpack.h \
-		igraph_cliquer.h cliquer/graph.h cliquer/cliquer.h cliquer/misc.h \
-		cliquer/cliquerconf.h cliquer/reorder.h cliquer/set.h
+		triangles_template1.h maximal_cliques_template.h prpack.h
 
 HEADERS_PUBLIC =../include/igraph.h 		../include/igraph_memory.h    \
 		../include/igraph_random.h 	../include/igraph_types.h     \
@@ -300,7 +193,7 @@ HEADERS_PUBLIC =../include/igraph.h 		../include/igraph_memory.h    \
 		../include/igraph_community.h	../include/igraph_operators.h \
 		../include/igraph_components.h	../include/igraph_paths.h     \
 		../include/igraph_constructors.h ../include/igraph_progress.h \
-		../include/igraph_conversion.h	\
+		../include/igraph_conversion.h	../include/igraph_revolver.h  \
 		../include/igraph_datatype.h	../include/igraph_structural.h\
 		../include/igraph_flow.h	../include/igraph_topology.h  \
 		../include/igraph_foreign.h	../include/igraph_transitivity.h \
@@ -319,11 +212,8 @@ HEADERS_PUBLIC =../include/igraph.h 		../include/igraph_memory.h    \
 		../include/igraph_hrg.h         ../include/igraph_microscopic_update.h \
 		../include/igraph_interrupt.h   ../include/igraph_threading.h \
 		../include/igraph_scg.h		../include/igraph_qsort.h \
-		../include/igraph_matching.h	../include/igraph_embedding.h \
-	        ../include/igraph_scan.h        ../include/igraph_graphlets.h \
-		../include/igraph_vector_type.h ../include/igraph_epidemics.h \
-		../include/igraph_lsap.h ../include/igraph_decls.h \
-		../include/igraph_coloring.h
+		../include/igraph_matching.h	../include/igraph_graphlets.h \
+		../include/igraph_vector_type.h ../include/igraph_epidemics.h
 
 SOURCES = 		     basic_query.c games.c cocitation.c iterators.c \
 			     structural_properties.c components.c layout.c \
@@ -344,16 +234,16 @@ SOURCES = 		     basic_query.c games.c cocitation.c iterators.c \
 			     foreign-graphml.c flow.c igraph_buckets.c \
 			     NetDataTypes.cpp NetRoutines.cpp clustertool.cpp \
 			     pottsmodel_2.cpp spectral_properties.c cores.c \
-			     igraph_set.c cliques.c \
+			     igraph_set.c cliques.c revolver_cit.c revolver_grow.c\
 			     walktrap.cpp walktrap_heap.cpp \
 			     walktrap_graph.cpp walktrap_communities.cpp \
 			     infomap.cc infomap_Greedy.cc infomap_Node.cc infomap_FlowGraph.cc \
 			     spmatrix.c community.c fast_community.c \
-			     gml_tree.c \
-			     bliss/orbit.cc bliss/defs.cc bliss/uintseqhash.cc \
-			     bliss/partition.cc bliss/graph.cc \
-			     bliss/bliss_heap.cc bliss/utils.cc bliss.cc \
-			     cattributes.c zeroin.c bfgs.c math.c \
+			     evolver_cit.c gml_tree.c \
+			     bliss_orbit.cc bliss_eqrefhash.cc \
+			     bliss_partition.cc bliss_graph.cc bliss_timer.cc \
+			     bliss_heap.cc bliss_utils.cc bliss.cc \
+			     cattributes.c revolver_ml_cit.c zeroin.c bfgs.c math.c \
 			     forestfire.c microscopic_update.c \
 			     blas.c arpack.c centrality.c drl_layout.cpp drl_parse.cpp \
 			     drl_graph.cpp DensityGrid.cpp \
@@ -377,32 +267,11 @@ SOURCES = 		     basic_query.c games.c cocitation.c iterators.c \
 			     scg.c scg_approximate_methods.c scg_exact_scg.c \
 			     scg_kmeans.c scg_utils.c scg_optimal_method.c \
 			     qsort.c qsort_r.c types.c lad.c hacks.c \
-			     embedding.c scan.c triangles.c glet.c \
-			     maximal_cliques.c sbm.c dotproduct.c sir.c \
-			     prpack.cpp $(CHOLMOD) $(AMD) $(COLAMD) \
-			     $(SPCONFIG) layout_gem.c layout_dh.c lsap.c \
-			     layout_fr.c layout_kk.c paths.c \
-			     random_walk.c \
-				 igraph_cliquer.c cliquer/cliquer.c cliquer/cliquer_graph.c cliquer/reorder.c \
-				 coloring.c
-
-if INTERNAL_F2C
-else
-  SOURCES += f2c/dummy.c
-endif
+			     triangles.c glet.c maximal_cliques.c sbm.c \
+			     sir.c  prpack.cpp
 
 libigraph_la_SOURCES       = $(SOURCES) $(HEADERS_PRIVATE)
-libigraph_la_CFLAGS        = -I$(top_srcdir)/include \
-			     -I$(top_builddir)/include \
-			     -I$(top_srcdir)/src/CHOLMOD/Include \
-                             -I$(top_builddir)/src/CHOLMOD/Include \
-			     -I$(top_srcdir)/src/AMD/Include \
-                             -I$(top_builddir)/src/AMD/Include \
-			     -I$(top_srcdir)/src/COLAMD/Include \
-                             -I$(top_builddir)/src/COLAMD/Include \
-                             -I$(top_srcdir)/src/SuiteSparse_config \
-                             -I$(top_builddir)/src/SuiteSparse_config \
-                             -DNPARTITION -DNTIMER -DNCAMD $(WARNING_CFLAGS)
+libigraph_la_CFLAGS        = -I$(top_srcdir)/include -I$(top_builddir)/include $(WARNING_CFLAGS)
 libigraph_la_CXXFLAGS	   = -I$(top_srcdir)/include -I$(top_builddir)/include $(WARNING_CFLAGS)
 libigraph_la_LDFLAGS       = -no-undefined
 libigraph_la_LIBADD        = -lm $(XML2_LIBS) $(F2C_LIB) $(BLAS_LIB) \
@@ -424,7 +293,7 @@ MAINTAINERCLEANFILES = Makefile.in foreign-lgl-parser.h foreign-ncol-parser.h
 
 echosources:
 	$(info $(SOURCES) $(LAPACK) $(ARPACK) $(BLAS) $(libf2c_la_SOURCES) \
-	$(libdlamch_la_SOURCES) $(libplfit_la_SOURCES) $(PRPACK))
+	$(libdlamch_la_SOURCES) $(libplfit_la_SOURCES))
 
 echoheaders:
 	$(info $(HEADERS_PUBLIC))

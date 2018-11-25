@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "igraph_random.h"
+#pragma clang diagnostic ignored "-Wsign-conversion"
 
 #include "cs.h"
 /* return a random permutation vector, the identity perm, or p = n-1:-1:0.
@@ -32,16 +32,13 @@ CS_INT *cs_randperm (CS_INT n, CS_INT seed)
     if (!p) return (NULL) ;             /* out of memory */
     for (k = 0 ; k < n ; k++) p [k] = n-k-1 ;
     if (seed == -1) return (p) ;        /* return reverse permutation */
-    /* srand (seed) ;                      /\* get new random number seed *\/ */
-    RNG_BEGIN();
+    srand (seed) ;                      /* get new random number seed */
     for (k = 0 ; k < n ; k++)
     {
-        /* j = k + (rand ( ) % (n-k)) ;    /\* j = rand CS_INT in range k to n-1 *\/ */
-      j = k + RNG_INTEGER(k, n-1) ;
+        j = k + (rand ( ) % (n-k)) ;    /* j = rand CS_INT in range k to n-1 */
         t = p [j] ;                     /* swap p[k] and p[j] */
         p [j] = p [k] ;
         p [k] = t ;
     }
-    RNG_END();
     return (p) ;
 }

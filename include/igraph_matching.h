@@ -23,7 +23,16 @@
 #ifndef IGRAPH_MATCHING_H
 #define IGRAPH_MATCHING_H
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
+
 #include "igraph_constants.h"
 #include "igraph_datatype.h"
 #include "igraph_types.h"
@@ -35,21 +44,21 @@ __BEGIN_DECLS
 /* Matchings in graphs                                */
 /* -------------------------------------------------- */
 
-DECLDIR int igraph_is_matching(const igraph_t* graph,
-                const igraph_vector_bool_t* types, const igraph_vector_long_t* matching,
-                igraph_bool_t* result);
-DECLDIR int igraph_is_maximal_matching(const igraph_t* graph,
-                const igraph_vector_bool_t* types, const igraph_vector_long_t* matching,
-                igraph_bool_t* result);
+int igraph_is_matching(const igraph_t* graph,
+    const igraph_vector_bool_t* types, const igraph_vector_long_t* matching,
+    igraph_bool_t* result);
+int igraph_is_maximal_matching(const igraph_t* graph,
+    const igraph_vector_bool_t* types, const igraph_vector_long_t* matching,
+    igraph_bool_t* result);
 
-DECLDIR int igraph_maximum_bipartite_matching(const igraph_t* graph,
-                const igraph_vector_bool_t* types, igraph_integer_t* matching_size,
-                igraph_real_t* matching_weight, igraph_vector_long_t* matching,
-                const igraph_vector_t* weights, igraph_real_t eps);
+int igraph_maximum_bipartite_matching(const igraph_t* graph,
+    const igraph_vector_bool_t* types, igraph_integer_t* matching_size,
+    igraph_real_t* matching_weight, igraph_vector_long_t* matching,
+    const igraph_vector_t* weights, igraph_real_t eps);
 
-DECLDIR int igraph_maximum_matching(const igraph_t* graph, igraph_integer_t* matching_size,
-                igraph_real_t* matching_weight, igraph_vector_long_t* matching,
-                const igraph_vector_t* weights);
+int igraph_maximum_matching(const igraph_t* graph, igraph_integer_t* matching_size,
+    igraph_real_t* matching_weight, igraph_vector_long_t* matching,
+    const igraph_vector_t* weights);
 
 __END_DECLS
 

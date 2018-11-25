@@ -47,7 +47,7 @@ int igraph_i_is_separator(const igraph_t *graph,
   long int start=0;
 
   if (IGRAPH_VIT_SIZE(*vit) >= no_of_nodes-1) {
-    /* Just need to check that we really have at least n-1 vertices in it */
+    /* Just need to check that we really have n-1 vertices in it */
     igraph_vector_bool_t hit;
     long int nohit=0;
     IGRAPH_CHECK(igraph_vector_bool_init(&hit, no_of_nodes));
@@ -63,8 +63,8 @@ int igraph_i_is_separator(const igraph_t *graph,
     }
     igraph_vector_bool_destroy(&hit);
     IGRAPH_FINALLY_CLEAN(1);
-    if (nohit >= no_of_nodes-1) {
-      *res = 0;
+    if (nohit == no_of_nodes-1) {
+      *res = 1;
       return 0;
     }
   }
@@ -101,12 +101,12 @@ int igraph_i_is_separator(const igraph_t *graph,
 		 IGRAPH_EINVAL);
   }
   
-  IGRAPH_CHECK(igraph_dqueue_push(Q, start));
+  igraph_dqueue_push(Q, start);
   VECTOR(*removed)[start]=1;
   while (!igraph_dqueue_empty(Q)) {
     long int node=(long int) igraph_dqueue_pop(Q);
     long int j, n;
-    IGRAPH_CHECK(igraph_neighbors(graph, neis, (igraph_integer_t) node, IGRAPH_ALL));
+    igraph_neighbors(graph, neis, (igraph_integer_t) node, IGRAPH_ALL);
     n=igraph_vector_size(neis);
     for (j=0; j<n; j++) {
       long int nei=(long int) VECTOR(*neis)[j];

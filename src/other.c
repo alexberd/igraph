@@ -122,7 +122,9 @@ int igraph_convex_hull(const igraph_matrix_t *data, igraph_vector_t *resverts,
 		       igraph_matrix_t *rescoords) {
   igraph_integer_t no_of_nodes;
   long int i, pivot_idx=0, last_idx, before_last_idx, next_idx, j;
-  igraph_vector_t angles, stack, order;
+  igraph_real_t* angles;
+  igraph_vector_t stack;
+  igraph_indheap_t order;
   igraph_real_t px, py, cp;
   
   no_of_nodes=(igraph_integer_t) igraph_matrix_nrow(data);
@@ -140,7 +142,10 @@ int igraph_convex_hull(const igraph_matrix_t *data, igraph_vector_t *resverts,
     return 0;
   }
     
-  IGRAPH_VECTOR_INIT_FINALLY(&angles, no_of_nodes);
+  angles=igraph_Calloc(no_of_nodes, igraph_real_t);
+  if (!angles) IGRAPH_ERROR("not enough memory for angle array", IGRAPH_ENOMEM);
+  IGRAPH_FINALLY(free, angles);
+  
   IGRAPH_VECTOR_INIT_FINALLY(&stack, 0);
   
   /* Search for the pivot vertex */
@@ -161,82 +166,68 @@ int igraph_convex_hull(const igraph_matrix_t *data, igraph_vector_t *resverts,
        * so we use 10 here. This way, after sorting the angle vector,
        * the pivot point will always be the first one, since the range
        * of atan2 is -3.14..3.14 */
-      VECTOR(angles)[i] = 10;
+      angles[i] = 10;
     } else {
-      VECTOR(angles)[i] = atan2(MATRIX(*data, i, 1)-py, MATRIX(*data, i, 0)-px);
+      angles[i] = atan2(MATRIX(*data, i, 1)-py,
+			MATRIX(*data, i, 0)-px);
     }
   }
 
-  /* Sort points by angles */
-  IGRAPH_VECTOR_INIT_FINALLY(&order, no_of_nodes);
-  IGRAPH_CHECK(igraph_vector_qsort_ind(&angles, &order, 0));
+  IGRAPH_CHECK(igraph_indheap_init_array(&order, angles, no_of_nodes));
+  IGRAPH_FINALLY(igraph_indheap_destroy, &order);
+  
+  igraph_Free(angles);
+  IGRAPH_FINALLY_CLEAN(1);
 
-  /* Check if two points have the same angle. If so, keep only the point that
-   * is farthest from the pivot */
-  j = 0;
-  last_idx = (long int) VECTOR(order)[0];
-  pivot_idx = (long int) VECTOR(order)[no_of_nodes - 1];
-  for (i=1; i < no_of_nodes; i++) {
-    next_idx = (long int) VECTOR(order)[i];
-    if (VECTOR(angles)[last_idx] == VECTOR(angles)[next_idx]) {
-      /* Keep the vertex that is farther from the pivot, drop the one that is
-       * closer */
-      px = pow(MATRIX(*data, last_idx, 0) - MATRIX(*data, pivot_idx, 0), 2) +
-           pow(MATRIX(*data, last_idx, 1) - MATRIX(*data, pivot_idx, 1), 2);
-      py = pow(MATRIX(*data, next_idx, 0) - MATRIX(*data, pivot_idx, 0), 2) +
-           pow(MATRIX(*data, next_idx, 1) - MATRIX(*data, pivot_idx, 1), 2);
-      if (px > py) {
-        VECTOR(order)[i] = -1;
-      } else {
-        VECTOR(order)[j] = -1;
-        last_idx = next_idx;
-        j = i;
-      }
-    } else {
-      last_idx = next_idx;
-      j = i;
-    }
-  }
-
-  j=0;
-  last_idx=-1;
-  before_last_idx=-1;
-  while (!igraph_vector_empty(&order)) {
-    next_idx=(long int)VECTOR(order)[igraph_vector_size(&order) - 1];
-    if (next_idx < 0) {
-      /* This vertex should be skipped; was excluded in an earlier step */
-      igraph_vector_pop_back(&order);
-      continue;
-    }
-    /* Determine whether we are at a left or right turn */
-    if (j < 2) {
-      /* Pretend that we are turning into the right direction if we have less
-       * than two items in the stack */
-      cp=-1;
-    } else {
+  if (no_of_nodes == 1) {
+    IGRAPH_CHECK(igraph_vector_push_back(&stack, 0));
+    igraph_indheap_delete_max(&order);
+  } else {
+    /* Do the trick */
+    IGRAPH_CHECK(igraph_vector_push_back(&stack, igraph_indheap_max_index(&order)-1));
+    igraph_indheap_delete_max(&order);
+    IGRAPH_CHECK(igraph_vector_push_back(&stack, igraph_indheap_max_index(&order)-1));
+    igraph_indheap_delete_max(&order);
+    
+    j=2;
+    while (!igraph_indheap_empty(&order)) {
+      /* Determine whether we are at a left or right turn */
+      last_idx=(long int) VECTOR(stack)[j-1];
+      before_last_idx=(long int) VECTOR(stack)[j-2];
+      next_idx=(long)igraph_indheap_max_index(&order)-1;
+      igraph_indheap_delete_max(&order);
       cp=(MATRIX(*data, last_idx, 0)-MATRIX(*data, before_last_idx, 0))*
-         (MATRIX(*data, next_idx, 1)-MATRIX(*data, before_last_idx, 1))-
-         (MATRIX(*data, next_idx, 0)-MATRIX(*data, before_last_idx, 0))*
-         (MATRIX(*data, last_idx, 1)-MATRIX(*data, before_last_idx, 1));
-    }
-	/*
-    printf("B L N cp: %ld, %ld, %ld, %f [", before_last_idx, last_idx, next_idx, (float)cp);
-    for (int k=0; k<j; k++) printf("%ld ", (long)VECTOR(stack)[k]);
-    printf("]\n");
-	*/
-    if (cp < 0) {
-      /* We are turning into the right direction */
-      igraph_vector_pop_back(&order);
-      IGRAPH_CHECK(igraph_vector_push_back(&stack, next_idx));
-      before_last_idx = last_idx;
-      last_idx = next_idx;
-      j++;
-    } else {
-      /* No, skip back and try again in the next iteration */
-      igraph_vector_pop_back(&stack);
-      j--;
-      last_idx = before_last_idx;
-      before_last_idx = (j >= 2) ? (long int) VECTOR(stack)[j-2] : -1;
+	(MATRIX(*data, next_idx, 1)-MATRIX(*data, before_last_idx, 1))-
+	(MATRIX(*data, next_idx, 0)-MATRIX(*data, before_last_idx, 0))*
+	(MATRIX(*data, last_idx, 1)-MATRIX(*data, before_last_idx, 1));
+      /*
+       printf("B L N cp: %d, %d, %d, %f [", before_last_idx, last_idx, next_idx, (float)cp);
+       for (k=0; k<j; k++) printf("%ld ", (long)VECTOR(stack)[k]);
+       printf("]\n");
+       */
+      if (cp == 0) {
+	/* The last three points are collinear. Replace the last one in
+	 * the stack to the newest one */
+	VECTOR(stack)[j-1]=next_idx;
+      } else if (cp < 0) {
+	/* We are turning into the right direction */
+	IGRAPH_CHECK(igraph_vector_push_back(&stack, next_idx));
+	j++;
+      } else {
+	/* No, skip back until we're okay */
+	while (cp >= 0 && j > 2) {
+	  igraph_vector_pop_back(&stack);
+	  j--;
+	  last_idx=(long int) VECTOR(stack)[j-1];
+	  before_last_idx=(long int) VECTOR(stack)[j-2];
+	  cp=(MATRIX(*data, last_idx, 0)-MATRIX(*data, before_last_idx, 0))*
+	    (MATRIX(*data, next_idx, 1)-MATRIX(*data, before_last_idx, 1))-
+	    (MATRIX(*data, next_idx, 0)-MATRIX(*data, before_last_idx, 0))*
+	    (MATRIX(*data, last_idx, 1)-MATRIX(*data, before_last_idx, 1));
+	}
+	IGRAPH_CHECK(igraph_vector_push_back(&stack, next_idx));
+	j++;
+      }
     }
   }
   
@@ -250,10 +241,9 @@ int igraph_convex_hull(const igraph_matrix_t *data, igraph_vector_t *resverts,
   }
   
   /* Free everything */
-  igraph_vector_destroy(&order);
   igraph_vector_destroy(&stack);
-  igraph_vector_destroy(&angles);
-  IGRAPH_FINALLY_CLEAN(3);
+  igraph_indheap_destroy(&order);
+  IGRAPH_FINALLY_CLEAN(2);
   
   return 0;
 }

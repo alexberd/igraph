@@ -272,9 +272,6 @@ int igraph_i_bipartite_projection(const igraph_t *graph,
  * \param proj1 Pointer to an uninitialized graph object, the first
  *   projection will be created here. It a null pointer, then it is
  *   ignored, see also the \p probe1 argument.
- * \param proj2 Pointer to an uninitialized graph object, the second
- *   projection is created here, if it is not a null pointer. See also
- *   the \p probe1 argument.
  * \param multiplicity1 Pointer to a vector, or a null pointer. If not
  *   the latter, then the multiplicity of the edges is stored
  *   here. E.g. if there is an A-C-B and also an A-D-B triple in the
@@ -283,13 +280,9 @@ int igraph_i_bipartite_projection(const igraph_t *graph,
  *   will be 2.
  * \param multiplicity2 The same as \c multiplicity1, but for the
  *   other projection.
- * \param probe1 This argument can be used to specify the order of the
- *   projections in the resulting list. When it is non-negative, then
- *   it is considered as a vertex ID and the projection containing
- *   this vertex will be the first one in the result. Setting this
- *   argument to a non-negative value implies that \c proj1 must be
- *   a non-null pointer. If you don't care about the ordering of the
- *   projections, pass -1 here.
+ * \param proj2 Pointer to an uninitialized graph object, the second
+ *   projection is created here, if it is not a null pointer. See also
+ *   the \p probe1 argument.
  * \return Error code.
  *
  * \sa \ref igraph_bipartite_projection_size() to calculate the number
@@ -987,9 +980,6 @@ int igraph_bipartite_game_gnm(igraph_t *graph, igraph_vector_bool_t *types,
   }
   
   if (m == 0 || n1 * n2 == 0) {
-    if (m > 0) {
-      IGRAPH_ERROR("Invalid number (too large) of edges", IGRAPH_EINVAL);
-    }  	
     IGRAPH_CHECK(retval=igraph_empty(graph, n1 + n2, directed));
   } else {
     

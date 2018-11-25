@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command RevitAddin-IGraph</Text>
+    <Description>Some description for RevitAddin-IGraph</Description>
+    <Assembly>RevitAddin-IGraph.dll</Assembly>
+    <FullClassName>RevitAddin_IGraph.Command</FullClassName>
+    <ClientId>ef850657-7414-49b8-bd4b-8dddfca82319</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application RevitAddin-IGraph</Name>
+    <Assembly>RevitAddin-IGraph.dll</Assembly>
+    <FullClassName>RevitAddin_IGraph.App</FullClassName>
+    <ClientId>078cdc79-b295-4419-a58d-6ebd64a0785b</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>

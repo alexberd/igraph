@@ -26,7 +26,15 @@
 
 #include <stdarg.h>
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
 
 __BEGIN_DECLS
 
@@ -252,7 +260,8 @@ extern igraph_error_handler_t igraph_error_handler_printignore;
  *   more.
  */
 
-DECLDIR igraph_error_handler_t* igraph_set_error_handler(igraph_error_handler_t* new_handler);
+igraph_error_handler_t*
+igraph_set_error_handler(igraph_error_handler_t* new_handler);
 
 /**
  * \typedef igraph_error_type_t
@@ -327,7 +336,6 @@ DECLDIR igraph_error_handler_t* igraph_set_error_handler(igraph_error_handler_t*
  * \enumval IGRAPH_EGLP Internal GLPK error.
  * \enumval IGRAPH_CPUTIME CPU time exceeded.
  * \enumval IGRAPH_EUNDERFLOW Integer or double underflow.
- * \enumval IGRAPH_ERWSTUCK Random walk got stuck.
  */
 
 typedef enum {
@@ -388,8 +396,7 @@ typedef enum {
   IGRAPH_EOVERFLOW        = 55,
   IGRAPH_EGLP             = 56,
   IGRAPH_CPUTIME          = 57,
-  IGRAPH_EUNDERFLOW       = 58,
-  IGRAPH_ERWSTUCK         = 59
+  IGRAPH_EUNDERFLOW       = 58
 } igraph_error_type_t;
 
 /**
@@ -437,8 +444,8 @@ typedef enum {
  * \sa igraph_errorf().
  */
 
-DECLDIR int igraph_error(const char *reason, const char *file, int line,
-                int igraph_errno);
+int igraph_error(const char *reason, const char *file, int line,
+		 int igraph_errno);
 
 /**
  * \function igraph_errorf
@@ -455,11 +462,11 @@ DECLDIR int igraph_error(const char *reason, const char *file, int line,
  * \sa igraph_error().
  */
 
-DECLDIR int igraph_errorf(const char *reason, const char *file, int line, 
-                int igraph_errno, ...);
+int igraph_errorf(const char *reason, const char *file, int line, 
+		  int igraph_errno, ...);
 
-DECLDIR int igraph_errorvf(const char *reason, const char *file, int line,
-                int igraph_errno, va_list ap);
+int igraph_errorvf(const char *reason, const char *file, int line,
+		   int igraph_errno, va_list ap);
 
 /**
  * \function igraph_strerror
@@ -472,7 +479,7 @@ DECLDIR int igraph_errorvf(const char *reason, const char *file, int line,
  * \return pointer to the textual description of the error code.
  */
 
-DECLDIR const char* igraph_strerror(const int igraph_errno);
+const char* igraph_strerror(const int igraph_errno);
 
 #define IGRAPH_ERROR_SELECT_2(a,b)       ((a) != IGRAPH_SUCCESS ? (a) : ((b) != IGRAPH_SUCCESS ? (b) : IGRAPH_SUCCESS))
 #define IGRAPH_ERROR_SELECT_3(a,b,c)     ((a) != IGRAPH_SUCCESS ? (a) : IGRAPH_ERROR_SELECT_2(b,c))
@@ -492,7 +499,7 @@ struct igraph_i_protectedPtr {
 
 typedef void igraph_finally_func_t (void*);
 
-DECLDIR void IGRAPH_FINALLY_REAL(void (*func)(void*), void* ptr);
+void IGRAPH_FINALLY_REAL(void (*func)(void*), void* ptr);
 
 /**
  * \function IGRAPH_FINALLY_CLEAN
@@ -505,7 +512,7 @@ DECLDIR void IGRAPH_FINALLY_REAL(void (*func)(void*), void* ptr);
  *   stack. 
  */
 
-DECLDIR void IGRAPH_FINALLY_CLEAN(int num); 
+void IGRAPH_FINALLY_CLEAN(int num); 
 
 /**
  * \function IGRAPH_FINALLY_FREE
@@ -519,7 +526,7 @@ DECLDIR void IGRAPH_FINALLY_CLEAN(int num);
  * as well.
  */
 
-DECLDIR void IGRAPH_FINALLY_FREE(void);
+void IGRAPH_FINALLY_FREE(void);
 
 /**
  * \function IGRAPH_FINALLY_STACK_SIZE
@@ -536,7 +543,7 @@ DECLDIR void IGRAPH_FINALLY_FREE(void);
  * write your own test cases and examine \ref IGRAPH_FINALLY_STACK_SIZE
  * before and after your test cases - the numbers should be equal.
  */
-DECLDIR int IGRAPH_FINALLY_STACK_SIZE(void);
+int IGRAPH_FINALLY_STACK_SIZE(void);
 
 /**
  * \define IGRAPH_FINALLY_STACK_EMPTY
@@ -649,7 +656,8 @@ typedef igraph_error_handler_t igraph_warning_handler_t;
  * \return The current warning handler function.
  */
 
-DECLDIR igraph_warning_handler_t* igraph_set_warning_handler(igraph_warning_handler_t* new_handler);
+igraph_warning_handler_t*
+igraph_set_warning_handler(igraph_warning_handler_t* new_handler);
 
 extern igraph_warning_handler_t igraph_warning_handler_ignore;
 extern igraph_warning_handler_t igraph_warning_handler_print;
@@ -669,8 +677,8 @@ extern igraph_warning_handler_t igraph_warning_handler_print;
  * \return The supplied error code.
  */
 
-DECLDIR int igraph_warning(const char *reason, const char *file, int line,
-                int igraph_errno);
+int igraph_warning(const char *reason, const char *file, int line,
+		   int igraph_errno);
 
 /**
  * \function igraph_warningf
@@ -691,8 +699,8 @@ DECLDIR int igraph_warning(const char *reason, const char *file, int line,
  * \return The supplied error code.
  */
 
-DECLDIR int igraph_warningf(const char *reason, const char *file, int line, 
-                int igraph_errno, ...);
+int igraph_warningf(const char *reason, const char *file, int line, 
+		    int igraph_errno, ...);
 
 /**
  * \define IGRAPH_WARNING

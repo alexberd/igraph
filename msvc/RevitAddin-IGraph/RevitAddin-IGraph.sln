@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitAddin-IGraph", "RevitAddin-IGraph\RevitAddin-IGraph.csproj", "{46A8DE79-1725-417E-B6E5-8577D2DB8A18}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46A8DE79-1725-417E-B6E5-8577D2DB8A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46A8DE79-1725-417E-B6E5-8577D2DB8A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46A8DE79-1725-417E-B6E5-8577D2DB8A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46A8DE79-1725-417E-B6E5-8577D2DB8A18}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0237D6E6-4EE3-4420-A3D1-6CF0FEBB33C9}
+	EndGlobalSection
+EndGlobal

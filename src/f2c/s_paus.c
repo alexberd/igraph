@@ -1,5 +1,8 @@
 #include "stdio.h"
 #include "f2c.h"
+
+#include "unistd.h"
+#include "process.h"
 #define PAUSESIG 15
 
 #include "signal1.h"
@@ -13,7 +16,7 @@
 #undef min
 #undef max
 #include "stdlib.h"
-#ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 #ifdef __cplusplus
@@ -62,7 +65,7 @@ s_paus(char *s, ftnlen n)
 	if(n > 0)
 		fprintf(stderr, " %.*s", (int)n, s);
 	fprintf(stderr, " statement executed\n");
-	if( isatty(fileno(stdin)) )
+	if( isatty(_fileno(stdin)) )
 		s_1paus(stdin);
 	else {
 #ifdef MSDOS
@@ -78,7 +81,7 @@ s_paus(char *s, ftnlen n)
 #else
 		fprintf(stderr,
 		"To resume execution, execute a   kill -%d %d   command\n",
-			PAUSESIG, getpid() );
+			PAUSESIG, _getpid() );
 		signal1(PAUSESIG, waitpause);
 		fflush(stderr);
 		pause();
@@ -94,3 +97,33 @@ s_paus(char *s, ftnlen n)
 #ifdef __cplusplus
 }
 #endif
+
+//int getpid(void)
+//{
+//	return 0;
+//}
+//
+//int isatty(int)
+//{
+//	return 0;
+//}
+//
+//int pause(void)
+//{
+//	return 0;
+//}
+
+int getpid(void)
+{
+	return 0;
+}
+
+//int isatty(int)
+//{
+//	return 0;
+//}
+
+int pause(void)
+{
+	return 0;
+}

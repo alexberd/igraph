@@ -391,52 +391,6 @@ int igraph_adjlist_fprint(const igraph_adjlist_t *al, FILE *outfile) {
   return 0;
 }
 
-#define ADJLIST_CANON_EDGE(from, to, directed) \
-  do {				       \
-    igraph_integer_t temp;	       \
-    if((!directed) && from < to) {     \
-      temp = to;		       \
-      to = from;		       \
-      from = temp;		       \
-    }				       \
-  } while(0);
-
-igraph_bool_t igraph_adjlist_has_edge(igraph_adjlist_t* al, igraph_integer_t from, igraph_integer_t to, igraph_bool_t directed) {
-  igraph_vector_int_t* fromvec;
-  ADJLIST_CANON_EDGE(from, to, directed);
-  fromvec = igraph_adjlist_get(al, from);
-  return igraph_vector_int_binsearch2(fromvec, to);
-
-}
-
-int igraph_adjlist_replace_edge(igraph_adjlist_t* al, igraph_integer_t from, igraph_integer_t oldto, igraph_integer_t newto, igraph_bool_t directed) {
-  igraph_vector_int_t *oldfromvec, *newfromvec;
-  int err1, err2;
-  long int oldpos, newpos;
-  igraph_integer_t oldfrom = from, newfrom = from;
-  ADJLIST_CANON_EDGE(oldfrom, oldto, directed);
-  ADJLIST_CANON_EDGE(newfrom, newto, directed);
-
-  oldfromvec = igraph_adjlist_get(al, oldfrom);
-  newfromvec = igraph_adjlist_get(al, newfrom);
-
-  
-  err1 = igraph_vector_int_binsearch(oldfromvec, oldto, &oldpos);
-  err2 = igraph_vector_int_binsearch(newfromvec, newto, &newpos);
-
-  /* oldfrom -> oldto should exist; newfrom -> newto should not. */
-  if((!err1) || err2)
-    return 1;
-
-  igraph_vector_int_remove(oldfromvec, oldpos);
-  if(oldfromvec == newfromvec && oldpos < newpos)
-    --newpos;
-  IGRAPH_CHECK(igraph_vector_int_insert(newfromvec, newpos, newto));
-
-  return 0;
-
-}
-
 int igraph_adjedgelist_remove_duplicate(const igraph_t *graph, 
 					igraph_inclist_t *al) {
     IGRAPH_WARNING("igraph_adjedgelist_remove_duplicate() is deprecated, use "
@@ -491,8 +445,8 @@ int igraph_inclist_remove_duplicate(const igraph_t *graph,
   long int i;
   long int n=al->length;
   for (i=0; i<n; i++) {
-    igraph_vector_int_t *v=&al->incs[i];
-    long int j, p=1, l=igraph_vector_int_size(v);
+    igraph_vector_t *v=&al->incs[i];
+    long int j, p=1, l=igraph_vector_size(v);
     for (j=1; j<l; j++) {
       long int e=(long int) VECTOR(*v)[j];
       /* Non-loop edges and one end of loop edges are fine. */
@@ -502,7 +456,7 @@ int igraph_inclist_remove_duplicate(const igraph_t *graph,
 	VECTOR(*v)[p++] = e;
       }
     }
-    igraph_vector_int_resize(v, p);
+    igraph_vector_resize(v, p);
   }
   
   return 0;
@@ -513,8 +467,8 @@ int igraph_inclist_print(const igraph_inclist_t *al) {
   long int i;
   long int n=al->length;
   for (i=0; i<n; i++) {
-    igraph_vector_int_t *v=&al->incs[i];
-    igraph_vector_int_print(v);
+    igraph_vector_t *v=&al->incs[i];
+    igraph_vector_print(v);
   }
   return 0;
 }
@@ -524,8 +478,8 @@ int igraph_inclist_fprint(const igraph_inclist_t *al, FILE *outfile) {
   long int i;
   long int n=al->length;
   for (i=0; i<n; i++) {
-    igraph_vector_int_t *v=&al->incs[i];
-    igraph_vector_int_fprint(v, outfile);
+    igraph_vector_t *v=&al->incs[i];
+    igraph_vector_fprint(v, outfile);
   }
   return 0;
 }
@@ -555,37 +509,27 @@ int igraph_inclist_init(const igraph_t *graph,
 			      igraph_inclist_t *il, 
 			      igraph_neimode_t mode) {
   igraph_integer_t i;
-  igraph_vector_t tmp;
 
   if (mode != IGRAPH_IN && mode != IGRAPH_OUT && mode != IGRAPH_ALL) {
     IGRAPH_ERROR("Cannot create incidence list view", IGRAPH_EINVMODE);
   }
 
-  igraph_vector_init(&tmp, 0);
-  IGRAPH_FINALLY(igraph_vector_destroy, &tmp);
-
   if (!igraph_is_directed(graph)) { mode=IGRAPH_ALL; }
 
   il->length=igraph_vcount(graph);
-  il->incs=igraph_Calloc(il->length, igraph_vector_int_t);
+  il->incs=igraph_Calloc(il->length, igraph_vector_t);
   if (il->incs == 0) {
     IGRAPH_ERROR("Cannot create incidence list view", IGRAPH_ENOMEM);
   }
 
   IGRAPH_FINALLY(igraph_inclist_destroy, il);  
   for (i=0; i<il->length; i++) {
-    int j, n;
     IGRAPH_ALLOW_INTERRUPTION();
-    IGRAPH_CHECK(igraph_incident(graph, &tmp, i, mode));
-    n=igraph_vector_size(&tmp);
-    IGRAPH_CHECK(igraph_vector_int_init(&il->incs[i], n));
-    for (j=0; j<n; j++) {
-      VECTOR(il->incs[i])[j] = VECTOR(tmp)[j];
-    }
+    IGRAPH_CHECK(igraph_vector_init(&il->incs[i], 0));
+    IGRAPH_CHECK(igraph_incident(graph, &il->incs[i], i, mode));
   }
   
-  igraph_vector_destroy(&tmp);
-  IGRAPH_FINALLY_CLEAN(2);
+  IGRAPH_FINALLY_CLEAN(1);
   return 0;
 }
 
@@ -608,14 +552,14 @@ int igraph_inclist_init_empty(igraph_inclist_t *il, igraph_integer_t n) {
   long int i;
 
   il->length=n;
-  il->incs=igraph_Calloc(il->length, igraph_vector_int_t);
+  il->incs=igraph_Calloc(il->length, igraph_vector_t);
   if (il->incs == 0) {
     IGRAPH_ERROR("Cannot create incidence list view", IGRAPH_ENOMEM);
   }
 
   IGRAPH_FINALLY(igraph_inclist_destroy, il);  
   for (i=0; i<n; i++) {
-    IGRAPH_CHECK(igraph_vector_int_init(&il->incs[i], 0));
+    IGRAPH_CHECK(igraph_vector_init(&il->incs[i], 0));
   }
   
   IGRAPH_FINALLY_CLEAN(1);
@@ -634,9 +578,9 @@ int igraph_inclist_init_empty(igraph_inclist_t *il, igraph_integer_t n) {
 void igraph_inclist_destroy(igraph_inclist_t *il) {
   long int i;
   for (i=0; i<il->length; i++) {
-    /* This works if some igraph_vector_int_t's are 0, 
-       because igraph_vector_destroy can handle this. */
-    igraph_vector_int_destroy(&il->incs[i]);
+    /* This works if some igraph_vector_t's are 0, because igraph_vector_destroy can
+       handle this. */
+    igraph_vector_destroy(&il->incs[i]);
   }
   igraph_Free(il->incs);
 }
@@ -652,7 +596,7 @@ void igraph_inclist_destroy(igraph_inclist_t *il) {
 void igraph_inclist_clear(igraph_inclist_t *il) {
   long int i;
   for (i=0; i<il->length; i++) {
-    igraph_vector_int_clear(&il->incs[i]);
+    igraph_vector_clear(&il->incs[i]);
   }
 }
 

@@ -906,9 +906,9 @@ bool graph_molloy_hash::make_connected() {
   return(trees == ffub);
 }
 
-int64_t graph_molloy_hash::slow_connected_shuffle(int64_t times) {
+long long graph_molloy_hash::slow_connected_shuffle(long long times) {
   assert(verify());
-  int64_t nb_swaps = 0;
+  long long nb_swaps = 0;
   int T = 1;
 
   while(times>nb_swaps) {

@@ -386,54 +386,47 @@ int igraph_lapack_dsyevr(const igraph_matrix_t *A,
     IGRAPH_FINALLY(igraph_vector_int_destroy, &vsupport);
     mysupport=&vsupport;
   }
-
-	IGRAPH_CHECK(igraph_vector_resize(myvalues, n));
-
+  
   switch (which) {
   case IGRAPH_LAPACK_DSYEV_ALL:
     range = 'A';
+    IGRAPH_CHECK(igraph_vector_resize(myvalues, n));
     IGRAPH_CHECK(igraph_vector_int_resize(mysupport, 2*n));
     if (vectors) { IGRAPH_CHECK(igraph_matrix_resize(vectors, n, n)); }
     break;
   case IGRAPH_LAPACK_DSYEV_INTERVAL:
     range = 'V';
+    IGRAPH_CHECK(igraph_vector_resize(myvalues, vestimate));
     IGRAPH_CHECK(igraph_vector_int_resize(mysupport, 2*vestimate));
     if (vectors) { IGRAPH_CHECK(igraph_matrix_resize(vectors,n, vestimate)); }
    break;
   case IGRAPH_LAPACK_DSYEV_SELECT:
     range = 'I';
+    IGRAPH_CHECK(igraph_vector_resize(myvalues, iu-il+1));
     IGRAPH_CHECK(igraph_vector_int_resize(mysupport, 2*(iu-il+1)));
     if (vectors) { IGRAPH_CHECK(igraph_matrix_resize(vectors, n, iu-il+1)); }
     break;
   }
-
+  
   igraphdsyevr_(&jobz, &range, &uplo, &n, &MATRIX(Acopy,0,0), &lda,
-		&vl, &vu, &il, &iu, &abstol, &m, VECTOR(*myvalues),
+		&vl, &vu, &il, &iu, &abstol, &m, VECTOR(*myvalues), 
 		vectors ? &MATRIX(*vectors,0,0) : 0, &ldz, VECTOR(*mysupport),
 		VECTOR(work), &lwork, VECTOR(iwork), &liwork, &info);
-
-	if (info != 0) {
-		IGRAPH_ERROR("Invalid argument to dsyevr in workspace query", IGRAPH_EINVAL);
-	}
-
+  
   lwork=(int) VECTOR(work)[0];
   liwork=VECTOR(iwork)[0];
   IGRAPH_CHECK(igraph_vector_resize(&work, lwork));
   IGRAPH_CHECK(igraph_vector_int_resize(&iwork, liwork));
 
   igraphdsyevr_(&jobz, &range, &uplo, &n, &MATRIX(Acopy,0,0), &lda,
-		&vl, &vu, &il, &iu, &abstol, &m, VECTOR(*myvalues),
+		&vl, &vu, &il, &iu, &abstol, &m, VECTOR(*myvalues), 
 		vectors ? &MATRIX(*vectors,0,0) : 0, &ldz, VECTOR(*mysupport),
 		VECTOR(work), &lwork, VECTOR(iwork), &liwork, &info);
 
-	if (info != 0) {
-		IGRAPH_ERROR("Invalid argument to dsyevr in calculation", IGRAPH_EINVAL);
-	}
-
-  if (values) {
+  if (values) { 
     IGRAPH_CHECK(igraph_vector_resize(values, m));
   }
-  if (vectors) {
+  if (vectors) { 
     IGRAPH_CHECK(igraph_matrix_resize(vectors, n, m));
   }
   if (support) {
@@ -929,20 +922,3 @@ int igraph_lapack_dgehrd(const igraph_matrix_t *A,
   
   return 0;
 }
-
-int igraph_lapack_ddot(const igraph_vector_t *v1, const igraph_vector_t *v2,
-		       igraph_real_t *res) {
-
-  int n=igraph_vector_size(v1);
-  int one=1;
-  
-  if (igraph_vector_size(v2) != n) { 
-    IGRAPH_ERROR("Dot product of vectors with different dimensions",
-		 IGRAPH_EINVAL);
-  }
-
-  *res = igraphddot_(&n, VECTOR(*v1), &one, VECTOR(*v2), &one);
-
-  return 0;
-}
-  

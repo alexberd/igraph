@@ -198,7 +198,6 @@ int igraph_read_graph_ncol(igraph_t *graph, FILE *instream,
   
   igraph_vector_t edges, ws;
   igraph_trie_t trie=IGRAPH_TRIE_NULL;
-  igraph_integer_t no_of_nodes;
   long int no_predefined=0;
   igraph_vector_ptr_t name, weight;
   igraph_vector_ptr_t *pname=0, *pweight=0;
@@ -273,13 +272,8 @@ int igraph_read_graph_ncol(igraph_t *graph, FILE *instream,
     VECTOR(weight)[0]=&weightrec;
   }
 
-  if (igraph_vector_empty(&edges)) {
-    no_of_nodes = 0;
-  } else {
-    no_of_nodes = igraph_vector_max(&edges)+1;
-  }
-
-  IGRAPH_CHECK(igraph_add_vertices(graph, no_of_nodes, pname));
+  IGRAPH_CHECK(igraph_add_vertices(graph, (igraph_integer_t) 
+				   igraph_vector_max(&edges)+1, pname));
   IGRAPH_CHECK(igraph_add_edges(graph, &edges, pweight));
 
   if (pname) {
@@ -2493,7 +2487,7 @@ int igraph_i_gml_convert_to_key(const char *orig, char **key) {
  * http://www.fim.uni-passau.de/en/fim/faculty/chairs/theoretische-informatik/projects.html for details.
  * 
  * </para><para> The graph, vertex and edges attributes are written to the
- * file as well, if they are numeric or string.
+ * file as well, if they are numeric of string.
  * 
  * </para><para> As igraph is more forgiving about attribute names, it might 
  * be necessary to simplify the them before writing to the GML file.
@@ -2727,17 +2721,6 @@ int igraph_i_dot_escape(const char *orig, char **result) {
   /* do we have to escape the string at all? */
   long int i, j, len=(long int) strlen(orig), newlen=0;
   igraph_bool_t need_quote=0, is_number=1;
-
-  /* first, check whether the string is equal to some reserved word */
-  if (!strcasecmp(orig, "graph") || !strcasecmp(orig, "digraph") ||
-      !strcasecmp(orig, "node") || !strcasecmp(orig, "edge") ||
-      !strcasecmp(orig, "strict") || !strcasecmp(orig, "subgraph")) {
-    need_quote=1;
-    is_number=0;
-  }
-
-  /* next, check whether we need to escape the string for any other reason.
-   * Also update is_number and newlen */
   for (i=0; i<len; i++) {
 	if (isdigit(orig[i])) { newlen++; }
 	else if (orig[i] == '-' && i==0) { newlen++; }
@@ -3064,11 +3047,7 @@ int igraph_read_graph_dl(igraph_t *graph, FILE *instream,
   }
 
   /* Check number of vertices */
-  if (n2 > 0) {
-    n = (long int) igraph_vector_max(&context.edges);
-  } else {
-    n = 0;
-  }
+  n=(long int) igraph_vector_max(&context.edges);
   if (n >= context.n) {
     IGRAPH_WARNING("More vertices than specified in `DL' file");
     context.n=n;

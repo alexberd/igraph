@@ -146,7 +146,7 @@ int FUNCTION(igraph_vector,init)      (TYPE(igraph_vector)* v, int long size) {
  * Be sure that you \em don't ever call the destructor (\ref
  * igraph_vector_destroy()) on objects created by this constructor.
  * \param v Pointer to an uninitialized \type igraph_vector_t object.
- * \param data Pointer, the C array. It may not be \c NULL.
+ * \param data Pointer, the C array.
  * \param length The length of the C array.
  * \return Pointer to the vector object, the same as the 
  *     \p v parameter, for convenience.
@@ -158,9 +158,6 @@ const TYPE(igraph_vector)*FUNCTION(igraph_vector,view) (const TYPE(igraph_vector
 							const BASE *data, 
 							long int length) {
   TYPE(igraph_vector) *v2=(TYPE(igraph_vector)*)v;
-
-  assert(data != 0);
-
   v2->stor_begin=(BASE*)data;
   v2->stor_end=(BASE*)data+length;
   v2->end=v2->stor_end;
@@ -1959,17 +1956,16 @@ int FUNCTION(igraph_vector,get_interval)(const TYPE(igraph_vector) *v,
  * vector.
  */
 
-igraph_real_t FUNCTION(igraph_vector,maxdifference)(const TYPE(igraph_vector) *m1,
-					     const TYPE(igraph_vector) *m2) {
+BASE FUNCTION(igraph_vector,maxdifference)(const TYPE(igraph_vector) *m1,
+					   const TYPE(igraph_vector) *m2) {
   long int n1=FUNCTION(igraph_vector,size)(m1);
   long int n2=FUNCTION(igraph_vector,size)(m2);
   long int n= n1 < n2 ? n1 : n2;
   long int i;
-  igraph_real_t diff=0.0;
+  BASE diff=ZERO;
   
   for (i=0; i<n; i++) {
-    igraph_real_t d=fabs((igraph_real_t)(VECTOR(*m1)[i]) -
-			 (igraph_real_t)(VECTOR(*m2)[i]));
+    BASE d=(BASE) fabs(VECTOR(*m1)[i]-VECTOR(*m2)[i]);
     if (d > diff) {
       diff=d;
     }
