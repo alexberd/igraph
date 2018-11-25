@@ -13,3 +13,7 @@ and documentation.
 
 Igraph can also be used from R, see https://github.com/igraph/rigraph,
 and from Python, see https://github.com/igraph/python-igraph
+
+Requirements for Visual Studio 2017
+-----------------------------------
+Windows SDK 10.0.16299.0
