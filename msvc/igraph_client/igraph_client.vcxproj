@@ -126,8 +126,8 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalUsingDirectories>C:\Users\WindowsOnUbuntu\Downloads\igraph-0.7.1-msvc%282%29\igraph-0.7.1-msvc\src;C:\Users\WindowsOnUbuntu\Downloads\igraph-0.7.1-msvc%282%29\igraph-0.7.1-msvc\src\prpack</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\igraph-0.7-msvc\include;C:\Users\WindowsOnUbuntu\source\repos\GITHUB\alexberd\igraph\include;C:\Users\WindowsOnUbuntu\source\repos\GITHUB\alexberd\igraph\src;C:\Users\WindowsOnUbuntu\source\repos\GITHUB\alexberd\igraph\src\prpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>..\..\src;..\..\src\prpack</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\include;..\..\src;..\..\src\prpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>igraph.lib;%(AdditionalDependencies)</AdditionalDependencies>
