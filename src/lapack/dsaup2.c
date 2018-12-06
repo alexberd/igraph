@@ -222,7 +222,7 @@ static integer c__2 = 2;
     real t0, t1, t2, t3;
     integer kp[3];
     IGRAPH_F77_SAVE integer np0;
-    integer nbx = 0;
+    integer nbx;
     IGRAPH_F77_SAVE integer nev0;
     extern doublereal igraphddot_(integer *, doublereal *, integer *, doublereal *, 
 	    integer *);
@@ -241,18 +241,18 @@ static integer c__2 = 2;
     IGRAPH_F77_SAVE integer nconv;
     IGRAPH_F77_SAVE logical initv;
     IGRAPH_F77_SAVE doublereal rnorm;
-    real tmvbx = 0.0;
+    real tmvbx;
     extern /* Subroutine */ int igraphdvout_(integer *, integer *, doublereal *, 
 	    integer *, char *, ftnlen), igraphivout_(integer *, integer *, integer *
 	    , integer *, char *, ftnlen), igraphdgetv0_(integer *, char *, integer *
 	    , logical *, integer *, integer *, doublereal *, integer *, 
 	    doublereal *, doublereal *, integer *, doublereal *, integer *);
-    integer msaup2 = 0;
+    integer msaup2=0;
     real tsaup2;
     extern doublereal igraphdlamch_(char *);
     integer nevbef;
     extern /* Subroutine */ int igraphsecond_(real *);
-    integer logfil, ndigit;
+    integer logfil=0, ndigit;
     extern /* Subroutine */ int igraphdseigt_(doublereal *, integer *, doublereal *,
 	     integer *, doublereal *, doublereal *, doublereal *, integer *);
     IGRAPH_F77_SAVE logical update;

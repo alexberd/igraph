@@ -76,12 +76,3 @@ int igraph_i_glpk_check(int retval, const char* message) {
 }
 
 #endif
-
-#ifdef USING_R
-
-int igraph_glpk_dummy() {
-  return 'b' + 'a' + 's' + 's' + 'z' + 'a' + 't' + 'o' + 'k' +
-    'm' + 'e' + 'g';
-}
-
-#endif

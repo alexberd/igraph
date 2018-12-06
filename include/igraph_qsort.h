@@ -24,14 +24,22 @@
 #ifndef IGRAPH_QSORT_H
 #define IGRAPH_QSORT_H
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
 
 __BEGIN_DECLS
 
-DECLDIR void igraph_qsort(void *base, size_t nel, size_t width,
-                 int (*compar)(const void *, const void *));
-DECLDIR void igraph_qsort_r(void *base, size_t nel, size_t width, void *thunk,
-                 int (*compar)(void *, const void *, const void *));
+void igraph_qsort(void *base, size_t nel, size_t width,
+		  int (*compar)(const void *, const void *));
+void igraph_qsort_r(void *base, size_t nel, size_t width, void *thunk,
+		    int (*compar)(void *, const void *, const void *));
 
 __END_DECLS
 

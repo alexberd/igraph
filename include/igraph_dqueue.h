@@ -25,7 +25,16 @@
 #define IGRAPH_DQUEUE_H
 
 #include "igraph_types.h"
-#include "igraph_decls.h"
+
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
 
 __BEGIN_DECLS
 
@@ -56,12 +65,6 @@ __BEGIN_DECLS
 #include "igraph_dqueue_pmt.h"
 #include "igraph_pmt_off.h"
 #undef BASE_BOOL
-
-#define BASE_INT
-#include "igraph_pmt.h"
-#include "igraph_dqueue_pmt.h"
-#include "igraph_pmt_off.h"
-#undef BASE_INT
 
 #define IGRAPH_DQUEUE_NULL { 0,0,0,0 }
 #define IGRAPH_DQUEUE_INIT_FINALLY(v, size) \

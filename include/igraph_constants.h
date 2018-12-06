@@ -24,7 +24,16 @@
 #ifndef IGRAPH_CONSTANTS_H
 #define IGRAPH_CONSTANTS_H
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
+
 #include "igraph_types.h"
 #include "igraph_datatype.h"
 
@@ -74,9 +83,6 @@ typedef enum { IGRAPH_GET_ADJACENCY_UPPER=0,
 typedef enum { IGRAPH_DEGSEQ_SIMPLE=0,
 	       IGRAPH_DEGSEQ_VL,
 	       IGRAPH_DEGSEQ_SIMPLE_NO_MULTIPLE } igraph_degseq_t;
-
-typedef enum { IGRAPH_RANDOM_TREE_PRUFER = 0,
-             IGRAPH_RANDOM_TREE_LERW } igraph_random_tree_t;
 
 typedef enum { IGRAPH_FILEFORMAT_EDGELIST=0,
 	       IGRAPH_FILEFORMAT_NCOL,
@@ -147,14 +153,6 @@ typedef igraph_real_t  igraph_scalar_function_t(const igraph_vector_t *var,
 typedef void igraph_vector_function_t(const igraph_vector_t *var, 
 				      const igraph_vector_t *par,
 				      igraph_vector_t* res, void* extra);
-
-typedef enum { IGRAPH_LAYOUT_GRID = 0,
-	       IGRAPH_LAYOUT_NOGRID,
-	       IGRAPH_LAYOUT_AUTOGRID } igraph_layout_grid_t;
-
-typedef enum { IGRAPH_RANDOM_WALK_STUCK_ERROR = 0,
-	       IGRAPH_RANDOM_WALK_STUCK_RETURN } igraph_random_walk_stuck_t;
-
 
 __END_DECLS
 

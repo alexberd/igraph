@@ -24,7 +24,15 @@
 #ifndef IGRAPH_STATUSBAR
 #define IGRAPH_STATUSBAR
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
 
 __BEGIN_DECLS
 
@@ -66,9 +74,10 @@ typedef int igraph_status_handler_t(const char *message, void *data);
 
 extern igraph_status_handler_t igraph_status_handler_stderr;
 
-DECLDIR igraph_status_handler_t * igraph_set_status_handler(igraph_status_handler_t new_handler);
+igraph_status_handler_t *
+igraph_set_status_handler(igraph_status_handler_t new_handler);
 
-DECLDIR int igraph_status(const char *message, void *data);
+int igraph_status(const char *message, void *data);
 
 /**
  * \define IGRAPH_STATUS
@@ -95,7 +104,7 @@ DECLDIR int igraph_status(const char *message, void *data);
     } \
   } while (0)
 
-DECLDIR int igraph_statusf(const char *message, void *data, ...);
+int igraph_statusf(const char *message, void *data, ...);
 
 /** 
  * \define IGRAPH_STATUSF

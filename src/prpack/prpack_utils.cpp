@@ -29,6 +29,7 @@ double prpack_utils::get_time() {
 }
 #else
 #include <sys/types.h>
+#include <sys/timeb.h>
 #include <sys/time.h>
 double prpack_utils::get_time() {
     struct timeval t;

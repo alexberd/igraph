@@ -24,7 +24,16 @@
 #ifndef IGRAPH_STACK_H
 #define IGRAPH_STACK_H
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
+
 #include "igraph_types.h"
 
 __BEGIN_DECLS
@@ -44,12 +53,6 @@ __BEGIN_DECLS
 #include "igraph_stack_pmt.h"
 #include "igraph_pmt_off.h"
 #undef BASE_LONG
-
-#define BASE_INT
-#include "igraph_pmt.h"
-#include "igraph_stack_pmt.h"
-#include "igraph_pmt_off.h"
-#undef BASE_INT
 
 #define BASE_CHAR
 #include "igraph_pmt.h"

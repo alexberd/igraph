@@ -34,10 +34,6 @@
 #include "igraph_statusbar.h"
 #include "igraph_progress.h"
 
-#ifndef register
-#define register
-#endif
-
 using namespace std;
 
 namespace gengraph {
@@ -1883,12 +1879,12 @@ double graph_molloy_opt::effective_K(int K, int quality) {
 
 /***** NOT USED ANYMORE (Modif 22/04/2005) ******
 
-int64_t *graph_molloy_opt::vertex_betweenness_usp(bool trivial_paths) {
+long long *graph_molloy_opt::vertex_betweenness_usp(bool trivial_paths) {
   if(VERBOSE()) fprintf(stderr,"Computing vertex betweenness USP...");
   int i;
   unsigned char *dist = new unsigned char[n];
   int *buff = new int[n];
-  int64_t *b = new int64_t[n];
+  long long *b = new long long[n];
   int *bb = new int[n];
   int *dd = new int[max_degree()];
   for(i=0; i<n; i++) b[i]=0;
@@ -1911,7 +1907,7 @@ int64_t *graph_molloy_opt::vertex_betweenness_usp(bool trivial_paths) {
       if(trivial_paths || w!=v0) bb[w] += bb[v]+1;
       if(trivial_paths) bb[v]++;
     }
-    for(i=0; i<nb_vertices; i++) b[buff[i]]+=(int64_t)(bb[buff[i]]);
+    for(i=0; i<nb_vertices; i++) b[buff[i]]+=(long long)(bb[buff[i]]);
   }
   delete[] dist;
   delete[] buff;
@@ -1920,12 +1916,12 @@ int64_t *graph_molloy_opt::vertex_betweenness_usp(bool trivial_paths) {
   return b;
 }
 
-int64_t *graph_molloy_opt::vertex_betweenness_rsp(bool trivial_paths) {
+long long *graph_molloy_opt::vertex_betweenness_rsp(bool trivial_paths) {
   if(VERBOSE()) fprintf(stderr,"Computing vertex betweenness RSP...");
   int i;
   unsigned char *dist = new unsigned char[n];
   int *buff = new int[n];
-  int64_t *b = new int64_t[n];
+  long long *b = new long long[n];
   int *bb = new int[n];
   int *dd = new int[max_degree()];
   for(i=0; i<n; i++) b[i]=0;
@@ -1961,7 +1957,7 @@ int64_t *graph_molloy_opt::vertex_betweenness_rsp(bool trivial_paths) {
       }
       if(trivial_paths) bb[v]++;
     }
-    for(i=0; i<nb_vertices; i++) b[buff[i]]+=(int64_t)(bb[buff[i]]);
+    for(i=0; i<nb_vertices; i++) b[buff[i]]+=(long long)(bb[buff[i]]);
   }
   delete[] dist;
   delete[] buff;

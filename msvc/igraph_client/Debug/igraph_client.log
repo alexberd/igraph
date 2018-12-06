@@ -23,7 +23,6 @@ c:\users\windowsonubuntu\source\repos\github\alexberd\igraph\msvc\igraph_client\
   igraph_betweeness.cpp
 c:\users\windowsonubuntu\source\repos\github\alexberd\igraph\msvc\igraph_client\igraph_betweeness.cpp(56): warning C4101: 'edges': unreferenced local variable
   Generating Code...
-  LINK : Debug\igraph_client.dll not found or not built by the last incremental link; performing full link
      Creating library Debug\igraph_client.lib and object Debug\igraph_client.exp
 igraph.lib(adjlist.obj) : warning LNK4099: PDB 'igraph.pdb' was not found with 'igraph.lib(adjlist.obj)' or at 'C:\Users\WindowsOnUbuntu\source\repos\GITHUB\alexberd\igraph\msvc\igraph_client\Debug\igraph.pdb'; linking object as if no debug info
 igraph.lib(arpack.obj) : warning LNK4099: PDB 'igraph.pdb' was not found with 'igraph.lib(arpack.obj)' or at 'C:\Users\WindowsOnUbuntu\source\repos\GITHUB\alexberd\igraph\msvc\igraph_client\Debug\igraph.pdb'; linking object as if no debug info

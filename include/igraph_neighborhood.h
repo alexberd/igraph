@@ -24,20 +24,27 @@
 #ifndef IGRAPH_NEIGHBORHOOD_H
 #define IGRAPH_NEIGHBORHOOD_H
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
 
 __BEGIN_DECLS
 
-DECLDIR int igraph_neighborhood_size(const igraph_t *graph, igraph_vector_t *res,
-                igraph_vs_t vids, igraph_integer_t order, 
-                igraph_neimode_t mode, igraph_integer_t mindist);
-DECLDIR int igraph_neighborhood(const igraph_t *graph, igraph_vector_ptr_t *res,
-                igraph_vs_t vids, igraph_integer_t order,
-                igraph_neimode_t mode, igraph_integer_t mindist);
-DECLDIR int igraph_neighborhood_graphs(const igraph_t *graph, igraph_vector_ptr_t *res,
-                igraph_vs_t vids, igraph_integer_t order,
-                igraph_neimode_t mode,
-                igraph_integer_t mindist);
+int igraph_neighborhood_size(const igraph_t *graph, igraph_vector_t *res,
+			     igraph_vs_t vids, igraph_integer_t order, 
+			     igraph_neimode_t mode);
+int igraph_neighborhood(const igraph_t *graph, igraph_vector_ptr_t *res,
+			igraph_vs_t vids, igraph_integer_t order,
+			igraph_neimode_t mode);
+int igraph_neighborhood_graphs(const igraph_t *graph, igraph_vector_ptr_t *res,
+			       igraph_vs_t vids, igraph_integer_t order,
+			       igraph_neimode_t mode);
 
 __END_DECLS
 

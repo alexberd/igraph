@@ -144,12 +144,12 @@ static doublereal c_b20 = 0.;
     extern /* Subroutine */ int igraphdlaqrb_(logical *, integer *, integer *, 
 	    integer *, doublereal *, integer *, doublereal *, doublereal *, 
 	    doublereal *, integer *);
-    integer mneigh = 0;
+    integer mneigh=0;
     extern /* Subroutine */ int igraphsecond_(real *), igraphdlacpy_(char *, integer *, 
 	    integer *, doublereal *, integer *, doublereal *, integer *);
-    integer logfil, ndigit;
+    integer logfil=0, ndigit;
     logical select[1];
-    real tneigh = 0.;
+    real tneigh;
     extern /* Subroutine */ int igraphdtrevc_(char *, char *, logical *, integer *, 
 	    doublereal *, integer *, doublereal *, integer *, doublereal *, 
 	    integer *, integer *, integer *, doublereal *, integer *);

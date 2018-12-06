@@ -26,7 +26,6 @@
 #include "igraph_interface.h"
 #include "igraph_adjlist.h"
 #include "igraph_interrupt_internal.h"
-#include "igraph_progress.h"
 #include "igraph_structural.h"
 #include "igraph_dqueue.h"
 #include "igraph_stack.h"
@@ -167,22 +166,21 @@ int igraph_clusters_strong(const igraph_t *graph, igraph_vector_t *membership,
   long int no_of_nodes=igraph_vcount(graph);
   igraph_vector_t next_nei=IGRAPH_VECTOR_NULL;
   
-  long int i, n, num_seen;
+  long int i;
   igraph_dqueue_t q=IGRAPH_DQUEUE_NULL;
   
   long int no_of_clusters=1;
   long int act_cluster_size;
 
   igraph_vector_t out=IGRAPH_VECTOR_NULL;
-  const igraph_vector_int_t* tmp;
-
-  igraph_adjlist_t adjlist;
+  igraph_vector_t tmp=IGRAPH_VECTOR_NULL;
 
   /* The result */
 
   IGRAPH_VECTOR_INIT_FINALLY(&next_nei, no_of_nodes);
   IGRAPH_VECTOR_INIT_FINALLY(&out, 0);
   IGRAPH_DQUEUE_INIT_FINALLY(&q, 100);
+  IGRAPH_VECTOR_INIT_FINALLY(&tmp, 0);
 
   if (membership) {
     IGRAPH_CHECK(igraph_vector_resize(membership, no_of_nodes));
@@ -193,30 +191,25 @@ int igraph_clusters_strong(const igraph_t *graph, igraph_vector_t *membership,
   if (csize) {
     igraph_vector_clear(csize);
   }
-
-  IGRAPH_CHECK(igraph_adjlist_init(graph, &adjlist, IGRAPH_OUT));
-  IGRAPH_FINALLY(igraph_adjlist_destroy, &adjlist);
-
-  num_seen = 0;
+  
   for (i=0; i<no_of_nodes; i++) {
     IGRAPH_ALLOW_INTERRUPTION();
-
-    tmp = igraph_adjlist_get(&adjlist, i);
-    if (VECTOR(next_nei)[i] > igraph_vector_int_size(tmp)) {
-      continue;
-    }
+    IGRAPH_CHECK(igraph_neighbors(graph, &tmp, (igraph_integer_t) i,
+				  IGRAPH_OUT));
+    if (VECTOR(next_nei)[i] > igraph_vector_size(&tmp)) { continue; }
     
     IGRAPH_CHECK(igraph_dqueue_push(&q, i));
     while (!igraph_dqueue_empty(&q)) {
       long int act_node=(long int) igraph_dqueue_back(&q);
-      tmp = igraph_adjlist_get(&adjlist, act_node);
+      IGRAPH_CHECK(igraph_neighbors(graph, &tmp, (igraph_integer_t) act_node,
+				    IGRAPH_OUT));
       if (VECTOR(next_nei)[act_node]==0) {
 	/* this is the first time we've met this vertex */
 	VECTOR(next_nei)[act_node]++;
-      } else if (VECTOR(next_nei)[act_node] <= igraph_vector_int_size(tmp)) {
+      } else if (VECTOR(next_nei)[act_node] <= igraph_vector_size(&tmp)) {
 	/* we've already met this vertex but it has more children */
-	long int neighbor=(long int) VECTOR(*tmp)[(long int)
-						  VECTOR(next_nei)[act_node]-1];
+	long int neighbor=(long int) VECTOR(tmp)[(long int)
+						 VECTOR(next_nei)[act_node]-1];
 	if (VECTOR(next_nei)[neighbor] == 0) {
 	  IGRAPH_CHECK(igraph_dqueue_push(&q, neighbor));
 	}
@@ -225,35 +218,18 @@ int igraph_clusters_strong(const igraph_t *graph, igraph_vector_t *membership,
 	/* we've met this vertex and it has no more children */
 	IGRAPH_CHECK(igraph_vector_push_back(&out, act_node));
 	igraph_dqueue_pop_back(&q);
-	num_seen++;
-
-	if (num_seen % 10000 == 0) {
-	  /* time to report progress and allow the user to interrupt */
-	  IGRAPH_PROGRESS("Strongly connected components: ",
-	      num_seen * 50.0 / no_of_nodes, NULL);
-	  IGRAPH_ALLOW_INTERRUPTION();
-	}
       }
     } /* while q */
   }  /* for */
 
-  IGRAPH_PROGRESS("Strongly connected components: ", 50.0, NULL);
-
-  igraph_adjlist_destroy(&adjlist);
-  IGRAPH_FINALLY_CLEAN(1);
-
-  IGRAPH_CHECK(igraph_adjlist_init(graph, &adjlist, IGRAPH_IN));
-  IGRAPH_FINALLY(igraph_adjlist_destroy, &adjlist);
-
   /* OK, we've the 'out' values for the nodes, let's use them in
      decreasing order with the help of a heap */
 
-  igraph_vector_null(&next_nei);             /* mark already added vertices */
-  num_seen = 0;
-
+  igraph_vector_null(&next_nei);                            /* mark already
+							added vertices */
   while (!igraph_vector_empty(&out)) {
     long int grandfather=(long int) igraph_vector_pop_back(&out);
-
+    IGRAPH_ALLOW_INTERRUPTION();
     if (VECTOR(next_nei)[grandfather] != 0) { continue; }
     VECTOR(next_nei)[grandfather]=1;
     act_cluster_size=1;
@@ -262,20 +238,12 @@ int igraph_clusters_strong(const igraph_t *graph, igraph_vector_t *membership,
     }
     IGRAPH_CHECK(igraph_dqueue_push(&q, grandfather));
     
-    num_seen++;
-    if (num_seen % 10000 == 0) {
-      /* time to report progress and allow the user to interrupt */
-      IGRAPH_PROGRESS("Strongly connected components: ",
-	  50.0 + num_seen * 50.0 / no_of_nodes, NULL);
-      IGRAPH_ALLOW_INTERRUPTION();
-    }
-
     while (!igraph_dqueue_empty(&q)) {
       long int act_node=(long int) igraph_dqueue_pop_back(&q);
-      tmp = igraph_adjlist_get(&adjlist, act_node);
-      n = igraph_vector_int_size(tmp);
-      for (i=0; i<n; i++) {
-	long int neighbor=(long int) VECTOR(*tmp)[i];
+      IGRAPH_CHECK(igraph_neighbors(graph, &tmp, (igraph_integer_t) act_node, 
+				    IGRAPH_IN));
+      for (i=0; i<igraph_vector_size(&tmp); i++) {
+	long int neighbor=(long int) VECTOR(tmp)[i];
 	if (VECTOR(next_nei)[neighbor] != 0) { continue; }
 	IGRAPH_CHECK(igraph_dqueue_push(&q, neighbor));
 	VECTOR(next_nei)[neighbor]=1;
@@ -283,31 +251,20 @@ int igraph_clusters_strong(const igraph_t *graph, igraph_vector_t *membership,
 	if (membership) {
 	  VECTOR(*membership)[neighbor]=no_of_clusters-1;
 	}
-
-	num_seen++;
-	if (num_seen % 10000 == 0) {
-	  /* time to report progress and allow the user to interrupt */
-	  IGRAPH_PROGRESS("Strongly connected components: ",
-	      50.0 + num_seen * 50.0 / no_of_nodes, NULL);
-	  IGRAPH_ALLOW_INTERRUPTION();
-	}
       }
     }
-
     no_of_clusters++;
     if (csize) {
       IGRAPH_CHECK(igraph_vector_push_back(csize, act_cluster_size));
     }
   }
   
-  IGRAPH_PROGRESS("Strongly connected components: ", 100.0, NULL);
-
   if (no) { *no=(igraph_integer_t) no_of_clusters-1; }
 
   /* Clean up, return */
 
-  igraph_adjlist_destroy(&adjlist);
   igraph_vector_destroy(&out);
+  igraph_vector_destroy(&tmp);
   igraph_dqueue_destroy(&q);
   igraph_vector_destroy(&next_nei);
   IGRAPH_FINALLY_CLEAN(4);
@@ -590,7 +547,7 @@ int igraph_decompose(const igraph_t *graph, igraph_vector_ptr_t *components,
  * 
  * Time complexity: O(|V|+|E|), linear in the number of vertices and edges.
  * 
- * \sa \ref igraph_biconnected_components(), \ref igraph_clusters(), \ref igraph_bridges()
+ * \sa \ref igraph_biconnected_components(), \ref igraph_clusters()
  */
 
 int igraph_articulation_points(const igraph_t *graph,
@@ -628,12 +585,6 @@ void igraph_i_free_vectorlist(igraph_vector_ptr_t *list) {
  * one biconnected component. Note that this is not true for
  * vertices: the same vertex can be part of many biconnected
  * components.
- *
- * </para><para>
- * Somewhat arbitrarily, igraph does not consider comppnents containing
- * a single vertex only as being biconnected. Isolated vertices will
- * not be part of any of the biconnected components.
- *
  * \param graph The input graph.
  * \param no The number of biconnected components will be stored here.
  * \param tree_edges If not a NULL pointer, then the found components
@@ -680,7 +631,7 @@ int igraph_biconnected_components(const igraph_t *graph,
   igraph_vector_long_t nextptr;
   igraph_vector_long_t num, low;
   igraph_vector_bool_t found;
-  igraph_vector_int_t *adjedges;
+  igraph_vector_t *adjedges;
   igraph_stack_t path;
   igraph_vector_t edgestack;
   igraph_inclist_t inclist;
@@ -746,7 +697,7 @@ int igraph_biconnected_components(const igraph_t *graph,
       long int actnext=VECTOR(nextptr)[act];
       
       adjedges=igraph_inclist_get(&inclist, act);
-      n=igraph_vector_int_size(adjedges);
+      n=igraph_vector_size(adjedges);
       if (actnext < n) {
 	/* Step down (maybe) */
 	long int edge=(long int) VECTOR(*adjedges)[actnext];
@@ -838,9 +789,9 @@ int igraph_biconnected_components(const igraph_t *graph,
 		IGRAPH_FINALLY(igraph_vector_destroy, vv);
 		for (ii=0; ii<no_vert; ii++) {
 		  long int vert=(long int) VECTOR(*nodes)[ii];
-		  igraph_vector_int_t *edges=igraph_inclist_get(&inclist, 
+		  igraph_vector_t *edges=igraph_inclist_get(&inclist, 
 								vert);
-		  long int j, nn=igraph_vector_int_size(edges);
+		  long int j, nn=igraph_vector_size(edges);
 		  for (j=0; j<nn; j++) {
 		    long int e=(long int) VECTOR(*edges)[j];
 		    long int nei=IGRAPH_OTHER(graph, e, vert);
@@ -885,103 +836,3 @@ int igraph_biconnected_components(const igraph_t *graph,
   return 0;
 }
 
-
-/* igraph_bridges -- find all bridges in the graph */
-/* based on https://www.geeksforgeeks.org/bridge-in-a-graph/ */
-
-static int igraph_i_bridges_rec(const igraph_t *graph, const igraph_inclist_t *il, igraph_integer_t u, igraph_integer_t *time, igraph_vector_t *bridges, igraph_vector_bool_t *visited, igraph_vector_int_t *disc, igraph_vector_int_t *low, igraph_vector_int_t *parent) {
-    igraph_vector_int_t *incedges;
-    long nc; /* neighbour count */
-    long i;
-
-    VECTOR(*visited)[u] = 1;
-
-    *time += 1;
-
-    VECTOR(*disc)[u] = *time;
-    VECTOR(*low)[u] = *time;
-
-    incedges = igraph_inclist_get(il, u);
-    nc = igraph_vector_int_size(incedges);
-    for (i=0; i < nc; ++i) {
-        long edge = (long) VECTOR(*incedges)[i];
-        igraph_integer_t v = IGRAPH_TO(graph, edge) == u ? IGRAPH_FROM(graph, edge) : IGRAPH_TO(graph, edge);
-
-        if (! VECTOR(*visited)[v]) {
-            VECTOR(*parent)[v] = u;
-            IGRAPH_CHECK(igraph_i_bridges_rec(graph, il, v, time, bridges, visited, disc, low, parent));
-
-            VECTOR(*low)[u] = VECTOR(*low)[u] < VECTOR(*low)[v] ? VECTOR(*low)[u] : VECTOR(*low)[v];
-
-            if (VECTOR(*low)[v] > VECTOR(*disc)[u])
-                IGRAPH_CHECK(igraph_vector_push_back(bridges, edge));
-        }
-        else if (v != VECTOR(*parent)[u]) {
-            VECTOR(*low)[u] = VECTOR(*low)[u] < VECTOR(*disc)[v] ? VECTOR(*low)[u] : VECTOR(*disc)[v];
-        }
-    }
-
-    return IGRAPH_SUCCESS;
-}
-
-/**
- * \function igraph_bridges
- * Find all bridges in a graph.
- *
- * An edge is a bridge if its removal increases the number of (weakly)
- * connected components in the graph.
- *
- * \param graph The input graph.
- * \param res Pointer to an initialized vector, the
- *    bridges will be stored here as edge indices.
- * \return Error code.
- *
- * Time complexity: O(|V|+|E|), linear in the number of vertices and edges.
- *
- * \sa \ref igraph_articulation_points(), \ref igraph_biconnected_components(), \ref igraph_clusters()
- */
-
-int igraph_bridges(const igraph_t *graph, igraph_vector_t *bridges) {
-    igraph_inclist_t il;
-    igraph_vector_bool_t visited;
-    igraph_vector_int_t disc, low;
-    igraph_vector_int_t parent;
-    long n;
-    long i;
-    igraph_integer_t time;
-
-    n = igraph_vcount(graph);
-
-    IGRAPH_CHECK(igraph_inclist_init(graph, &il, IGRAPH_ALL));
-    IGRAPH_FINALLY(igraph_inclist_destroy, &il);
-
-    IGRAPH_CHECK(igraph_vector_bool_init(&visited, n));
-    IGRAPH_FINALLY(igraph_vector_bool_destroy, &visited);
-
-    IGRAPH_CHECK(igraph_vector_int_init(&disc, n));
-    IGRAPH_FINALLY(igraph_vector_int_destroy, &disc);
-
-    IGRAPH_CHECK(igraph_vector_int_init(&low, n));
-    IGRAPH_FINALLY(igraph_vector_int_destroy, &low);
-
-    IGRAPH_CHECK(igraph_vector_int_init(&parent, n));
-    IGRAPH_FINALLY(igraph_vector_int_destroy, &parent);
-    for (i=0; i < n; ++i)
-        VECTOR(parent)[i] = -1;
-
-    igraph_vector_clear(bridges);
-
-    time = 0;
-    for (i=0; i < n; ++i)
-        if (! VECTOR(visited)[i])
-            IGRAPH_CHECK(igraph_i_bridges_rec(graph, &il, i, &time, bridges, &visited, &disc, &low, &parent));
-
-    igraph_vector_int_destroy(&parent);
-    igraph_vector_int_destroy(&low);
-    igraph_vector_int_destroy(&disc);
-    igraph_vector_bool_destroy(&visited);
-    igraph_inclist_destroy(&il);
-    IGRAPH_FINALLY_CLEAN(5);
-
-    return IGRAPH_SUCCESS;
-}

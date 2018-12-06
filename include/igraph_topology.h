@@ -24,7 +24,16 @@
 #ifndef IGRAPH_TOPOLOGY_H
 #define IGRAPH_TOPOLOGY_H
 
-#include "igraph_decls.h"
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
+
 #include "igraph_constants.h"
 #include "igraph_datatype.h"
 #include "igraph_types.h"
@@ -36,19 +45,19 @@ __BEGIN_DECLS
 /* Degree sequences                                   */
 /* -------------------------------------------------- */
 
-DECLDIR int igraph_is_degree_sequence(const igraph_vector_t *out_degrees,
+int igraph_is_degree_sequence(const igraph_vector_t *out_degrees,
         const igraph_vector_t *in_degrees, igraph_bool_t *res);
-DECLDIR int igraph_is_graphical_degree_sequence(const igraph_vector_t *out_degrees,
+int igraph_is_graphical_degree_sequence(const igraph_vector_t *out_degrees,
         const igraph_vector_t *in_degrees, igraph_bool_t *res);
 
 /* -------------------------------------------------- */
 /* Directed acyclic graphs                            */
 /* -------------------------------------------------- */
 
-DECLDIR int igraph_topological_sorting(const igraph_t *graph, igraph_vector_t *res,
+int igraph_topological_sorting(const igraph_t *graph, igraph_vector_t *res,
 			       igraph_neimode_t mode);
-DECLDIR int igraph_is_dag(const igraph_t *graph, igraph_bool_t *res);
-DECLDIR int igraph_transitive_closure_dag(const igraph_t *graph,
+int igraph_is_dag(const igraph_t *graph, igraph_bool_t *res);
+int igraph_transitive_closure_dag(const igraph_t *graph,
 				  igraph_t *closure);
 
 /* -------------------------------------------------- */
@@ -56,17 +65,17 @@ DECLDIR int igraph_transitive_closure_dag(const igraph_t *graph,
 /* -------------------------------------------------- */
 
 /* Common functions */
-DECLDIR int igraph_permute_vertices(const igraph_t *graph, igraph_t *res,
+int igraph_permute_vertices(const igraph_t *graph, igraph_t *res,
 			    const igraph_vector_t *permutation);
 
 /* Generic interface */
-DECLDIR int igraph_isomorphic(const igraph_t *graph1, const igraph_t *graph2,
+int igraph_isomorphic(const igraph_t *graph1, const igraph_t *graph2,
 		      igraph_bool_t *iso);
-DECLDIR int igraph_subisomorphic(const igraph_t *graph1, const igraph_t *graph2,
+int igraph_subisomorphic(const igraph_t *graph1, const igraph_t *graph2,
 			 igraph_bool_t *iso);
 
 /* LAD */
-DECLDIR int igraph_subisomorphic_lad(const igraph_t *pattern, const igraph_t *target,
+int igraph_subisomorphic_lad(const igraph_t *pattern, const igraph_t *target,
 			     igraph_vector_ptr_t *domains,
 			     igraph_bool_t *iso, igraph_vector_t *map, 
 			     igraph_vector_ptr_t *maps, 
@@ -121,7 +130,7 @@ typedef igraph_bool_t igraph_isocompat_t(const igraph_t *graph1,
 					 const igraph_integer_t g2_num,
 					 void *arg);
 
-DECLDIR int igraph_isomorphic_vf2(const igraph_t *graph1, const igraph_t *graph2, 
+int igraph_isomorphic_vf2(const igraph_t *graph1, const igraph_t *graph2, 
 			  const igraph_vector_int_t *vertex_color1,
 			  const igraph_vector_int_t *vertex_color2,
 			  const igraph_vector_int_t *edge_color1,
@@ -132,7 +141,7 @@ DECLDIR int igraph_isomorphic_vf2(const igraph_t *graph1, const igraph_t *graph2
 			  igraph_isocompat_t *node_compat_fn,
 			  igraph_isocompat_t *edge_compat_fn,
 			  void *arg);
-DECLDIR int igraph_isomorphic_function_vf2(const igraph_t *graph1, const igraph_t *graph2,
+int igraph_isomorphic_function_vf2(const igraph_t *graph1, const igraph_t *graph2,
 				   const igraph_vector_int_t *vertex_color1,
 				   const igraph_vector_int_t *vertex_color2,
 				   const igraph_vector_int_t *edge_color1,
@@ -142,7 +151,7 @@ DECLDIR int igraph_isomorphic_function_vf2(const igraph_t *graph1, const igraph_
 				   igraph_isocompat_t *node_compat_fn,
 				   igraph_isocompat_t *edge_compat_fn,
 				   void *arg);
-DECLDIR int igraph_count_isomorphisms_vf2(const igraph_t *graph1, const igraph_t *graph2, 
+int igraph_count_isomorphisms_vf2(const igraph_t *graph1, const igraph_t *graph2, 
 				  const igraph_vector_int_t *vertex_color1,
 				  const igraph_vector_int_t *vertex_color2,
 				  const igraph_vector_int_t *edge_color1,
@@ -151,7 +160,7 @@ DECLDIR int igraph_count_isomorphisms_vf2(const igraph_t *graph1, const igraph_t
 				  igraph_isocompat_t *node_compat_fn,
 				  igraph_isocompat_t *edge_compat_fn,
 				  void *arg);
-DECLDIR int igraph_get_isomorphisms_vf2(const igraph_t *graph1,
+int igraph_get_isomorphisms_vf2(const igraph_t *graph1,
 				const igraph_t *graph2,
 				const igraph_vector_int_t *vertex_color1,
 				const igraph_vector_int_t *vertex_color2,
@@ -162,7 +171,7 @@ DECLDIR int igraph_get_isomorphisms_vf2(const igraph_t *graph1,
 				igraph_isocompat_t *edge_compat_fn,
 				void *arg);
 
-DECLDIR int igraph_subisomorphic_vf2(const igraph_t *graph1, const igraph_t *graph2, 
+int igraph_subisomorphic_vf2(const igraph_t *graph1, const igraph_t *graph2, 
 			     const igraph_vector_int_t *vertex_color1,
 			     const igraph_vector_int_t *vertex_color2,
 			     const igraph_vector_int_t *edge_color1,
@@ -173,7 +182,7 @@ DECLDIR int igraph_subisomorphic_vf2(const igraph_t *graph1, const igraph_t *gra
 			     igraph_isocompat_t *node_compat_fn,
 			     igraph_isocompat_t *edge_compat_fn,
 			     void *arg);
-DECLDIR int igraph_subisomorphic_function_vf2(const igraph_t *graph1, 
+int igraph_subisomorphic_function_vf2(const igraph_t *graph1, 
 				      const igraph_t *graph2,
 				      const igraph_vector_int_t *vertex_color1,
 				      const igraph_vector_int_t *vertex_color2,
@@ -185,7 +194,7 @@ DECLDIR int igraph_subisomorphic_function_vf2(const igraph_t *graph1,
 				      igraph_isocompat_t *node_compat_fn,
 				      igraph_isocompat_t *edge_compat_fn,
 				      void *arg);
-DECLDIR int igraph_count_subisomorphisms_vf2(const igraph_t *graph1, const igraph_t *graph2, 
+int igraph_count_subisomorphisms_vf2(const igraph_t *graph1, const igraph_t *graph2, 
 				     const igraph_vector_int_t *vertex_color1,
 				     const igraph_vector_int_t *vertex_color2,
 				     const igraph_vector_int_t *edge_color1,
@@ -194,7 +203,7 @@ DECLDIR int igraph_count_subisomorphisms_vf2(const igraph_t *graph1, const igrap
 				     igraph_isocompat_t *node_compat_fn,
 				     igraph_isocompat_t *edge_compat_fn,
 				     void *arg);
-DECLDIR int igraph_get_subisomorphisms_vf2(const igraph_t *graph1,
+int igraph_get_subisomorphisms_vf2(const igraph_t *graph1,
 				   const igraph_t *graph2,
 				   const igraph_vector_int_t *vertex_color1,
 				   const igraph_vector_int_t *vertex_color2,
@@ -217,11 +226,10 @@ DECLDIR int igraph_get_subisomorphisms_vf2(const igraph_t *graph1,
  * \member nof_leaf_nodes The number of leaf nodes in the search tree.
  * \member nof_bad_nodes Number of bad nodes.
  * \member nof_canupdates Number of canrep updates.
- * \member nof_generators Number of generators of the automorphism group.
  * \member max_level Maximum level.
  * \member group_size The size of the automorphism group of the graph,
  *    given as a string. It should be deallocated via
- *    \ref igraph_free() if not needed any more.
+ *    <function>free()</function> if not needed any more.
  * 
  * See http://www.tcs.hut.fi/Software/bliss/index.html
  * for details about the algorithm and these parameters.
@@ -231,7 +239,6 @@ typedef struct igraph_bliss_info_t {
   unsigned long nof_leaf_nodes;
   unsigned long nof_bad_nodes;
   unsigned long nof_canupdates;
-  unsigned long nof_generators;
   unsigned long max_level;
   char *group_size;
 } igraph_bliss_info_t;
@@ -255,28 +262,24 @@ typedef enum { IGRAPH_BLISS_F=0, IGRAPH_BLISS_FL,
 	       IGRAPH_BLISS_FS, IGRAPH_BLISS_FM, 
 	       IGRAPH_BLISS_FLM, IGRAPH_BLISS_FSM } igraph_bliss_sh_t;
 
-DECLDIR int igraph_canonical_permutation(const igraph_t *graph, const igraph_vector_int_t *colors, igraph_vector_t *labeling,
-                 igraph_bliss_sh_t sh, igraph_bliss_info_t *info);
-DECLDIR int igraph_isomorphic_bliss(const igraph_t *graph1, const igraph_t *graph2,
-                const igraph_vector_int_t *colors1, const igraph_vector_int_t *colors2,
+int igraph_canonical_permutation(const igraph_t *graph, igraph_vector_t *labeling, 
+				 igraph_bliss_sh_t sh, igraph_bliss_info_t *info);
+int igraph_isomorphic_bliss(const igraph_t *graph1, const igraph_t *graph2,
 			    igraph_bool_t *iso, igraph_vector_t *map12, 
 			    igraph_vector_t *map21,
-                igraph_bliss_sh_t sh,
+			    igraph_bliss_sh_t sh1, igraph_bliss_sh_t sh2, 
 			    igraph_bliss_info_t *info1, igraph_bliss_info_t *info2);
 
-DECLDIR int igraph_automorphisms(const igraph_t *graph, const igraph_vector_int_t *colors,
-             igraph_bliss_sh_t sh, igraph_bliss_info_t *info);
-
-DECLDIR int igraph_automorphism_group(const igraph_t *graph, const igraph_vector_int_t *colors, igraph_vector_ptr_t *generators,
-        igraph_bliss_sh_t sh, igraph_bliss_info_t *info);
+int igraph_automorphisms(const igraph_t *graph,
+			 igraph_bliss_sh_t sh, igraph_bliss_info_t *info);
 
 /* Functions for 3-4 graphs */
-DECLDIR int igraph_isomorphic_34(const igraph_t *graph1, const igraph_t *graph2, 
+int igraph_isomorphic_34(const igraph_t *graph1, const igraph_t *graph2, 
 			 igraph_bool_t *iso);
-DECLDIR int igraph_isoclass(const igraph_t *graph, igraph_integer_t *isoclass);
-DECLDIR int igraph_isoclass_subgraph(const igraph_t *graph, igraph_vector_t *vids,
+int igraph_isoclass(const igraph_t *graph, igraph_integer_t *isoclass);
+int igraph_isoclass_subgraph(const igraph_t *graph, igraph_vector_t *vids,
 			     igraph_integer_t *isoclass);
-DECLDIR int igraph_isoclass_create(igraph_t *graph, igraph_integer_t size,
+int igraph_isoclass_create(igraph_t *graph, igraph_integer_t size,
 			   igraph_integer_t number, igraph_bool_t directed);
 
 

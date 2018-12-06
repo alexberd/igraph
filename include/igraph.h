@@ -74,6 +74,7 @@
 #include "igraph_motifs.h"
 #include "igraph_operators.h"
 #include "igraph_flow.h"
+#include "igraph_revolver.h"
 #include "igraph_nongraph.h"
 #include "igraph_cocitation.h"
 #include "igraph_adjlist.h"
@@ -90,11 +91,7 @@
 #include "igraph_interrupt.h"
 #include "igraph_scg.h"
 #include "igraph_matching.h"
-#include "igraph_embedding.h"
-#include "igraph_scan.h"
 #include "igraph_graphlets.h"
 #include "igraph_epidemics.h"
-#include "igraph_lsap.h"
-#include "igraph_coloring.h"
 
 #endif
